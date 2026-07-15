@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pakistan Housing Valuation</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+  
+  <!-- Chart.js and HTML2PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body class="dark-theme">
+  <nav class="navbar pt-4">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="navbar-brand fw-bold fs-3 text-white m-0" href="#">Predictly</a>
+      <button class="theme-toggle" id="themeToggleBtn">☀️ Light Mode</button>
+    </div>
+  </nav>
+
+  <div class="container main-container py-5" id="report-content">
+    <div class="text-center mb-5 hero-section">
+      <h1 class="display-4 fw-bold text-white">Intelligent Property Valuation</h1>
+      <p class="lead text-muted">Leverage Advanced Machine Learning & AI Vision to predict housing prices across Pakistan.</p>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-dark border-secondary text-white" role="alert">
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+      <!-- Form Section -->
+      <div class="col-lg-7">
+        <div class="glass-card p-4 p-md-5 mb-4">
+          <form action="/" method="POST" enctype="multipart/form-data" id="valuationForm">
+            
+            <h4 class="mb-4 form-section-title">Property Details</h4>
+            
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <select class="form-select" id="city" name="city" required>
+                    <option value="Lahore">Lahore</option>
+                    <option value="Karachi">Karachi</option>
+                    <option value="Islamabad">Islamabad</option>
+                    <option value="Rawalpindi">Rawalpindi</option>
+                    <option value="Faisalabad">Faisalabad</option>
+                    <option value="Multan">Multan</option>
+                  </select>
+                  <label for="city">City</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="number" step="any" name="area_marla" class="form-control" id="area_marla" placeholder="Area" required>
+                  <label for="area_marla">Area (Marlas)</label>
+                </div>
+              </div>
+              
+              <div class="col-md-4">
+                <div class="form-floating">
+                  <select class="form-select" id="property_type" name="property_type" required>
+                    <option value="House">House</option>
+                    <option value="Flat">Flat</option>
+                    <option value="Upper Portion">Upper Portion</option>
+                    <option value="Lower Portion">Lower Portion</option>
+                    <option value="Farm House">Farm House</option>
+                  </select>
+                  <label for="property_type">Property Type</label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-floating">
+                  <input type="number" name="bedrooms" class="form-control" id="bedrooms" placeholder="Bedrooms" required>
+                  <label for="bedrooms">Bedrooms</label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-floating">
+                  <input type="number" name="bathrooms" class="form-control" id="bathrooms" placeholder="Bathrooms" required>
+                  <label for="bathrooms">Bathrooms</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Amenities -->
+            <h4 class="mb-3 mt-5 form-section-title">Neighborhood Amenities</h4>
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="amenity_gated" name="amenity_gated">
+                  <label class="form-check-label small" for="amenity_gated">Gated Community</label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="amenity_metro" name="amenity_metro">
+                  <label class="form-check-label small" for="amenity_metro">Near Metro/BRT</label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="amenity_commercial" name="amenity_commercial">
+                  <label class="form-check-label small" for="amenity_commercial">Commercial Area</label>
+                </div>
+              </div>
+            </div>
+
+            <h4 class="mb-3 mt-4 form-section-title">Visual AI Analysis</h4>
+            <p class="text-muted small">Upload a picture of the property. Our Vision AI will fetch info (condition, stories, luxury) to factor into the valuation.</p>
+            
+            <div class="mb-4">
+              <input class="form-control custom-file-input" type="file" id="house_image" name="house_image" accept="image/*">
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn btn-primary w-100 py-3 mt-2 fw-bold">Calculate Valuation</button>
+          </form>
+        </div>
+
+        {% if results %}
+        <!-- Market Trends Chart -->
+        <div class="glass-card p-4">
+          <h5 class="mb-3">5-Year Price Trend ({{selected_city}})</h5>
+          <canvas id="trendChart" height="100"></canvas>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Results & Sidebar Section -->
+      <div class="col-lg-5">
+        
+        <!-- Results Card -->
+        <div class="glass-card p-4 mb-4 text-center">
+          <h4 class="mb-3 text-muted">Estimated Price</h4>
+          {% if results %}
+            <h2 class="fw-bold text-white mb-0">PKR {{results}}</h2>
+            <button id="downloadPdfBtn" class="btn btn-outline-primary btn-sm mt-3 px-4">⬇ Download PDF Report</button>
+            
+            {% if breakdown %}
+            <div class="mt-4 text-start pt-3 border-top" style="border-color: var(--card-border) !important;">
+              <p class="small mb-1 d-flex justify-content-between text-muted">
+                <span>Base ({{breakdown.city}} + Amenities):</span> 
+                <span class="text-white">PKR {{breakdown.base}}</span>
+              </p>
+              
+              {% if image_path %}
+              <div class="mt-3 p-3 rounded" style="background-color: var(--input-bg); border: 1px solid var(--card-border);">
+                <h6 class="text-white mb-2">AI Vision Assessment</h6>
+                <p class="small text-muted mb-2 fst-italic">"{{ ai_description }}"</p>
+                <p class="small mb-1 d-flex justify-content-between text-white fw-bold">
+                  <span>AI Value Adjustment:</span> 
+                  <span>PKR {{breakdown.image_adj}}</span>
+                </p>
+                <div class="mt-3 text-center">
+                   <img src="{{ url_for('static', filename=image_path) }}" alt="Uploaded Property" class="img-fluid rounded border" style="max-height: 120px; border-color: var(--card-border);">
+                </div>
+              </div>
+              {% endif %}
+            </div>
+            
+            <!-- Mortgage Calculator -->
+            <div class="mt-4 text-start pt-3 border-top" style="border-color: var(--card-border) !important;">
+              <h5 class="mb-3 text-white fs-6">Mortgage Estimator</h5>
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="small text-muted mb-1">Down Payment (%)</label>
+                  <input type="number" id="downPayment" class="form-control form-control-sm" value="20" min="10" max="90">
+                </div>
+                <div class="col-6">
+                  <label class="small text-muted mb-1">Term (Years)</label>
+                  <select id="loanTerm" class="form-select form-select-sm">
+                    <option value="10">10 Years</option>
+                    <option value="15">15 Years</option>
+                    <option value="20" selected>20 Years</option>
+                  </select>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-center fw-bold text-primary">
+                Est. Installment: <span id="monthlyEmi">PKR 0</span> / month
+              </p>
+              <!-- Hidden input to pass raw total to JS -->
+              <input type="hidden" id="rawTotal" value="{{breakdown.raw_total}}">
+            </div>
+
+            <!-- Similar Properties -->
+            <div class="mt-4 text-start pt-3 border-top" style="border-color: var(--card-border) !important;">
+              <h5 class="mb-3 text-white fs-6">Similar Properties in {{selected_city}}</h5>
+              <div class="comp-card d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0 text-white small">{{selected_area}} Marla House</h6>
+                  <span class="text-muted" style="font-size: 0.75rem;">Phase 5, DHA</span>
+                </div>
+                <span class="text-primary small fw-bold">PKR {{(breakdown.raw_total * 1.05) | round | int}}</span>
+              </div>
+              <div class="comp-card d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0 text-white small">{{selected_area}} Marla House</h6>
+                  <span class="text-muted" style="font-size: 0.75rem;">Bahria Town</span>
+                </div>
+                <span class="text-primary small fw-bold">PKR {{(breakdown.raw_total * 0.92) | round | int}}</span>
+              </div>
+            </div>
+
+            {% endif %}
+            
+          {% else %}
+            <h1 class="display-5 fw-bold text-muted mb-0">---</h1>
+            <p class="small text-muted mt-2">Enter details to see valuation</p>
+          {% endif %}
+        </div>
+
+        <!-- Location Map Placeholder -->
+        <div class="glass-card p-0 overflow-hidden" style="height: 250px; position: relative;">
+          <div id="map" style="width: 100%; height: 100%;"></div>
+          <div class="map-overlay">
+            <span class="badge bg-dark">Pakistan Map</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-5 py-4 text-center border-top" style="border-color: var(--card-border) !important;">
+    <div class="container">
+      <p class="mb-1 text-muted">Developed by <span class="text-white fw-bold">Abdul Wahid</span></p>
+      <a href="https://github.com/abduIwahid" class="text-muted text-decoration-none small" target="_blank">github.com/abduIwahid</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <script>
+    // City Coordinates
+    const cityData = {
+      'Lahore': [31.5204, 74.3587],
+      'Karachi': [24.8607, 67.0011],
+      'Islamabad': [33.6844, 73.0479],
+      'Rawalpindi': [33.5973, 73.0479],
+      'Faisalabad': [31.4504, 73.1350],
+      'Multan': [30.1575, 71.5249]
+    };
+
+    let initialCoords = [30.3753, 69.3451];
+    let initialZoom = 5;
+    
+    {% if selected_city %}
+    if (cityData['{{selected_city}}']) {
+      initialCoords = cityData['{{selected_city}}'];
+      initialZoom = 12;
+    }
+    {% endif %}
+
+    var map = L.map('map').setView(initialCoords, initialZoom);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap',
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(map);
+
+    let currentMarker = null;
+
+    {% if selected_city %}
+    if (cityData['{{selected_city}}']) {
+      currentMarker = L.marker(cityData['{{selected_city}}']).addTo(map)
+        .bindPopup('<b>{{selected_city}}</b><br>Valuation Location')
+        .openPopup();
+    }
+    {% endif %}
+
+    // Link Map to City Dropdown
+    document.getElementById('city').addEventListener('change', function() {
+      const selectedCity = this.value;
+      if (cityData[selectedCity]) {
+        const coords = cityData[selectedCity];
+        map.flyTo(coords, 12, { animate: true, duration: 1.5 });
+        
+        if (currentMarker) {
+          map.removeLayer(currentMarker);
+        }
+        currentMarker = L.marker(coords).addTo(map)
+          .bindPopup('<b>' + selectedCity + '</b><br>Selected Location')
+          .openPopup();
+      }
+    });
+
+    // Light/Dark Theme Toggle
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      if (document.body.classList.contains('light-theme')) {
+        document.body.classList.remove('dark-theme');
+        themeToggleBtn.innerHTML = '🌙 Dark Mode';
+        // Optional: change map layer to light
+      } else {
+        document.body.classList.add('dark-theme');
+        themeToggleBtn.innerHTML = '☀️ Light Mode';
+      }
+    });
+
+    {% if results %}
+    // Mortgage Calculator Math
+    const rawTotal = parseFloat(document.getElementById('rawTotal').value);
+    const dpInput = document.getElementById('downPayment');
+    const termInput = document.getElementById('loanTerm');
+    const emiDisplay = document.getElementById('monthlyEmi');
+
+    function calculateEmi() {
+      const dpPercent = parseFloat(dpInput.value) / 100;
+      const principal = rawTotal - (rawTotal * dpPercent);
+      const interestRate = 0.15; // 15% annual mock interest
+      const monthlyRate = interestRate / 12;
+      const totalMonths = parseInt(termInput.value) * 12;
+
+      // EMI Formula
+      const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+      
+      emiDisplay.innerText = "PKR " + Math.round(emi).toLocaleString();
+    }
+    
+    dpInput.addEventListener('input', calculateEmi);
+    termInput.addEventListener('change', calculateEmi);
+    calculateEmi(); // Initial calc
+
+    // Chart.js Mock Trend Data
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    const isLight = document.body.classList.contains('light-theme');
+    const gridColor = '#333333';
+    const textColor = '#888888';
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['2022', '2023', '2024', '2025', '2026'],
+        datasets: [{
+          label: 'Avg Price per Marla (PKR Millions)',
+          data: [1.8, 2.0, 2.3, 2.2, 2.5], // Mock data
+          borderColor: '#ffffff',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { grid: { color: gridColor }, ticks: { color: textColor } },
+          x: { grid: { color: gridColor }, ticks: { color: textColor } }
+        }
+      }
+    });
+
+    // PDF Export
+    document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+      const element = document.getElementById('report-content');
+      // Hide buttons for PDF
+      document.getElementById('downloadPdfBtn').style.display = 'none';
+      const opt = {
+        margin:       0.5,
+        filename:     'Valuation_Report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save().then(() => {
+        document.getElementById('downloadPdfBtn').style.display = 'inline-block';
+      });
+    });
+    {% endif %}
+    // Loading State for Form Submission
+    const valuationForm = document.getElementById('valuationForm');
+    if (valuationForm) {
+      valuationForm.addEventListener('submit', function() {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Analyzing with AI...';
+      });
+    }
+  </script>
+</body>
+</html>

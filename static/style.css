@@ -1,0 +1,227 @@
+/* Base Variables (Dark Theme Default) */
+:root {
+  --bg-color: #000000;
+  --card-bg: #111111;
+  --card-border: #333333;
+  --primary: #ffffff;
+  --primary-hover: #cccccc;
+  --text-main: #f5f5f5;
+  --text-muted: #888888;
+  --input-bg: #080808;
+  --input-border: #333333;
+  --input-focus: #777777;
+  --danger-bg: #2b0000;
+  --danger-border: #500000;
+}
+
+/* Light Theme Variables */
+body.light-theme {
+  --bg-color: #f0f2f5;
+  --card-bg: #ffffff;
+  --card-border: #e0e0e0;
+  --primary: #000000;
+  --primary-hover: #333333;
+  --text-main: #1a1a1a;
+  --text-muted: #666666;
+  --input-bg: #ffffff;
+  --input-border: #cccccc;
+  --input-focus: #000000;
+  --danger-bg: #ffe6e6;
+  --danger-border: #ffcccc;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Navbar */
+.navbar-brand.text-white {
+  color: var(--text-main) !important;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  transition: all 0.3s ease;
+}
+.theme-toggle:hover {
+  background: var(--input-bg);
+}
+
+/* Glassmorphism Cards but Monochrome */
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+body.dark-theme .glass-card {
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .glass-card:hover {
+  box-shadow: 0 12px 40px 0 rgba(255, 255, 255, 0.05);
+}
+body.light-theme .glass-card:hover {
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Typography */
+.text-primary {
+  color: var(--primary) !important;
+}
+.text-white {
+  color: var(--text-main) !important;
+}
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.form-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 8px;
+}
+
+/* Form Controls */
+.form-floating > .form-control,
+.form-floating > .form-select,
+.form-control, .form-select {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-main);
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus,
+.form-control:focus, .form-select:focus {
+  background-color: var(--card-bg);
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 0.25rem rgba(128, 128, 128, 0.1);
+  color: var(--text-main);
+}
+
+.form-floating > label {
+  color: var(--text-muted);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+.form-select option {
+  background-color: var(--card-bg);
+  color: var(--text-main);
+}
+
+/* Checkboxes (Amenities) */
+.form-check-input {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+}
+.form-check-input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.form-check-label {
+  color: var(--text-main);
+}
+
+/* Custom File Input */
+.custom-file-input {
+  background-color: var(--input-bg);
+  border: 1px dashed var(--input-border);
+  color: var(--text-main);
+  padding: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.custom-file-input:hover {
+  border-color: var(--text-main);
+}
+
+/* Button */
+.btn-primary {
+  background: var(--primary);
+  color: var(--bg-color);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  color: var(--bg-color);
+  border-color: var(--primary-hover);
+}
+
+.btn-outline-primary {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+.btn-outline-primary:hover {
+  background: var(--primary);
+  color: var(--bg-color);
+}
+
+/* Map Overlay & Badges */
+.map-overlay {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 1000;
+}
+
+.badge.bg-dark {
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--card-border);
+  color: var(--text-main) !important;
+}
+
+/* Alerts */
+.alert-dark {
+  background-color: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--text-main);
+}
+
+/* Specific component tweaks */
+.comp-card {
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--input-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
