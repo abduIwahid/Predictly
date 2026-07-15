@@ -118,7 +118,7 @@
             </div>
 
             <h4 class="mb-3 mt-4 form-section-title">Visual AI Analysis</h4>
-            <p class="text-muted small">Upload a picture of the property. Our Vision AI will fetch info (condition, stories, luxury) to factor into the valuation.</p>
+            <p class="text-muted small">Upload a photo of the property. Our on-device AI will analyze the image and generate its own independent price estimate based on visual quality, condition, and appeal.</p>
             
             <div class="mb-4">
               <input class="form-control custom-file-input" type="file" id="house_image" name="house_image" accept="image/*">
@@ -150,20 +150,32 @@
             {% if breakdown %}
             <div class="mt-4 text-start pt-3 border-top" style="border-color: var(--card-border) !important;">
               <p class="small mb-1 d-flex justify-content-between text-muted">
-                <span>Base ({{breakdown.city}} + Amenities):</span> 
+                <span>Base ({{breakdown.city}} + Amenities):</span>
                 <span class="text-white">PKR {{breakdown.base}}</span>
               </p>
-              
-              {% if image_path %}
+
+              {% if image_path and ai_analysis %}
               <div class="mt-3 p-3 rounded" style="background-color: var(--input-bg); border: 1px solid var(--card-border);">
-                <h6 class="text-white mb-2">AI Vision Assessment</h6>
-                <p class="small text-muted mb-2 fst-italic">"{{ ai_description }}"</p>
-                <p class="small mb-1 d-flex justify-content-between text-white fw-bold">
-                  <span>AI Value Adjustment:</span> 
-                  <span>PKR {{breakdown.image_adj}}</span>
-                </p>
+                <div class="d-flex align-items-center mb-2">
+                  <span style="font-size:1.4rem; margin-right:8px;">{{ ai_analysis.emoji }}</span>
+                  <h6 class="text-white mb-0">AI Visual Analysis</h6>
+                  <span class="ms-auto badge" style="background: linear-gradient(135deg,#6366f1,#8b5cf6); font-size:0.7rem;">{{ ai_analysis.condition }}</span>
+                </div>
+
+                <p class="small text-muted mb-3 fst-italic" style="line-height:1.5;">{{ ai_analysis.description }}</p>
+
+                <div class="d-flex justify-content-between align-items-center p-2 rounded mb-2" style="background:rgba(99,102,241,0.12); border:1px solid rgba(99,102,241,0.3);">
+                  <span class="small text-muted">AI Visual Score</span>
+                  <span class="fw-bold text-white">{{ ai_analysis.score }} / 100</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center p-2 rounded" style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3);">
+                  <span class="small text-muted">AI Estimated Price</span>
+                  <span class="fw-bold" style="color:#10b981;">PKR {{ breakdown.ai_price_fmt }}</span>
+                </div>
+
                 <div class="mt-3 text-center">
-                   <img src="{{ url_for('static', filename=image_path) }}" alt="Uploaded Property" class="img-fluid rounded border" style="max-height: 120px; border-color: var(--card-border);">
+                  <img src="{{ url_for('static', filename=image_path) }}" alt="Uploaded Property" class="img-fluid rounded border" style="max-height: 130px; border-color: var(--card-border);">
                 </div>
               </div>
               {% endif %}
